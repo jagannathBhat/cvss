@@ -1,0 +1,117 @@
+:focus {
+    outline: none;
+}
+
+body, html {
+    background-color: #fafafa;
+    color: #212121;
+    font: 18px "Arial", sans-serif;
+    height: 100%;
+    margin: 0px;
+    text-align: center;
+    width: 100%;
+}
+
+footer #level, footer #score {
+    color: #fafafa;
+}
+
+h1, h2, h3 {
+    font-weight: normal;
+}
+
+footer {
+    padding: 1px;
+}
+
+footer.--Critical {
+    background-color: #f44336;
+}
+footer.--High {
+    background-color: #ff9800;
+}
+footer.--Low {
+    background-color: #4caf50;
+}
+footer.--Medium {
+    background-color: #ffeb3b;
+}
+footer.--None {
+    background-color: #212121;
+}
+
+h1 {
+    font-size: 36px;
+    margin: 0px;
+}
+
+h2 {
+    font-size: 30px;
+    margin: 24px 0px;
+}
+
+header {
+    padding: 48px 24px 24px 24px;
+}
+
+main {
+    padding: 24px;
+}
+
+.metric, .metric-name, .metric-value {
+    transition-duration: 0.3s;
+}
+
+.metric .metric-name {
+    display: block;
+}
+
+.metric .metric-value {
+    background: transparent;
+    border: 3px solid #212121;
+    border-radius: 15px;
+    color: #212121;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 18px;
+    margin: 6px 12px;
+    padding: 6px;
+    width: auto;
+}
+
+.metric.--active .metric-name {
+    font-size: 48px;
+}
+
+.metric.--active .metric-value {
+    border-radius: 24px;
+    display: block;
+    font-size: 24px;
+    margin: 18px auto;
+    padding: 12px;
+}
+
+.metric.--collapse .metric-name {
+    display: inline-block;
+    font-size: 24px;
+}
+
+.metric.--collapse .metric-value {
+    display: none;
+}
+
+.metric.--collapse .metric-value.--selected {
+    display: inline-block;
+    background-color: #212121;
+    color: #fafafa;
+}
+
+#score {
+    font-size: 60px;
+    margin: 48px 0px 0px 0px;
+}
+
+#level {
+    font-size: 18px;
+    margin: 6px 0px 24px 0px;
+}

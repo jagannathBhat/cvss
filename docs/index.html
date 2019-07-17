@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8">
+    <meta name="author" content="Jagannath Bhat">
+    <meta name="description" content="Common Vulnerability Scoring System based calculator">
+    <meta name="keywords" content="cvss,common,vulnerability,scoring,system,calculator">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVSS Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>CVSS Calculator</h1>
+    </header>
+    <main>
+        <div class="metric --active" id="AV">
+            <h2 class="metric-name">Attack Vector</h2>
+            <button class="metric-value">Network</button>
+            <button class="metric-value">Adjacent</button>
+            <button class="metric-value">Local</button>
+            <button class="metric-value">Physical</button>
+        </div>
+        <div class="metric" id="AC">
+            <h2 class="metric-name">Attack Complexity</h2>
+            <button class="metric-value">Low</button>
+            <button class="metric-value">High</button>
+        </div>
+        <div class="metric" id="PR">
+            <h2 class="metric-name">Privileges Required</h2>
+            <button class="metric-value">None</button>
+            <button class="metric-value">Low</button>
+            <button class="metric-value">High</button>
+        </div>
+        <div class="metric" id="UI">
+            <h2 class="metric-name">User Interaction</h2>
+            <button class="metric-value">None</button>
+            <button class="metric-value">Required</button>
+        </div>
+        <div class="metric" id="S">
+            <h2 class="metric-name">Scope</h2>
+            <button class="metric-value">Unchanged</button>
+            <button class="metric-value">Changed</button>
+        </div>
+        <div class="metric" id="C">
+            <h2 class="metric-name">Confidentiality</h2>
+            <button class="metric-value">None</button>
+            <button class="metric-value">Low</button>
+            <button class="metric-value">High</button>
+        </div>
+        <div class="metric" id="I">
+            <h2 class="metric-name">Integrity</h2>
+            <button class="metric-value">None</button>
+            <button class="metric-value">Low</button>
+            <button class="metric-value">High</button>
+        </div>
+        <div class="metric" id="A">
+            <h2 class="metric-name">Availability</h2>
+            <button class="metric-value">None</button>
+            <button class="metric-value">Low</button>
+            <button class="metric-value">High</button>
+        </div>
+    </main>
+    <footer class="">
+        <h1 id="score">0.0</h1>
+        <h3 id="level">none</h3>
+    </footer>
+</body>
+
+</html>
