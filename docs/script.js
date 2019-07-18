@@ -2,7 +2,10 @@
     var UI = {
         metricNo: 0,
         nextMetric: (e) => {
-            e = e.path[0];
+            if (e.path[0])
+                e = e.path[0];
+            else
+                e = e.currentTarget;
             document.querySelectorAll(".metric.--active .metric-value").forEach((e) => {
                 e.removeEventListener("click", UI.nextMetric);
             });
