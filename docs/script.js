@@ -36,7 +36,6 @@
         reset: () => {
             UI.metricNo = 0;
             document.querySelectorAll(".metric.--collapse").forEach((e) => {
-                console.log(e);
                 e.classList.remove("--collapse");
             });
             document.querySelectorAll(".metric-value.--selected").forEach((e) => {
