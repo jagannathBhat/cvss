@@ -5,6 +5,7 @@
 body, html {
     background-color: #fafafa;
     color: #212121;
+    cursor: default;
     font: 18px "Arial", sans-serif;
     height: 100%;
     margin: 0px;
@@ -12,16 +13,17 @@ body, html {
     width: 100%;
 }
 
-footer #level, footer #score {
-    color: #fafafa;
-}
-
 h1, h2, h3 {
     font-weight: normal;
 }
 
 footer {
+    color: #fafafa;
     padding: 1px;
+}
+
+footer #reset {
+    cursor: pointer;
 }
 
 footer.--Critical {
@@ -63,14 +65,15 @@ main {
 }
 
 .metric .metric-name {
+    color: #21212155;
     display: block;
 }
 
 .metric .metric-value {
     background: transparent;
-    border: 3px solid #212121;
+    border: 3px solid  #21212155;
     border-radius: 15px;
-    color: #212121;
+    color: #21212155;
     cursor: pointer;
     display: inline-block;
     font-size: 18px;
@@ -81,10 +84,13 @@ main {
 
 .metric.--active .metric-name {
     font-size: 48px;
+    color: #212121;
 }
 
 .metric.--active .metric-value {
+    border-color: #212121;
     border-radius: 24px;
+    color: #212121;
     display: block;
     font-size: 24px;
     margin: 18px auto;
@@ -92,6 +98,7 @@ main {
 }
 
 .metric.--collapse .metric-name {
+    color: #212121;
     display: inline-block;
     font-size: 24px;
 }
@@ -103,6 +110,7 @@ main {
 .metric.--collapse .metric-value.--selected {
     display: inline-block;
     background-color: #212121;
+    border-color: #212121;
     color: #fafafa;
 }
 

@@ -1,6 +1,11 @@
 (() => {
     var UI = {
         metricNo: 0,
+        addEvent: () => {
+            document.querySelectorAll(".metric.--active .metric-value").forEach((e) => {
+                e.addEventListener("click", UI.nextMetric);
+            });
+        },
         nextMetric: (e) => {
             e = e.path[0];
             document.querySelectorAll(".metric.--active .metric-value").forEach((e) => {
@@ -28,10 +33,19 @@
                 }
             }
         },
-        addEvent: () => {
-            document.querySelectorAll(".metric.--active .metric-value").forEach((e) => {
-                e.addEventListener("click", UI.nextMetric);
+        reset: () => {
+            UI.metricNo = 0;
+            document.querySelectorAll(".metric.--collapse").forEach((e) => {
+                console.log(e);
+                e.classList.remove("--collapse");
             });
+            document.querySelectorAll(".metric-value.--selected").forEach((e) => {
+                e.classList.remove("--selected");
+            });
+            document.querySelectorAll(".metric")[UI.metricNo].classList.add("--active");
+            window.scrollTo(0, 0);
+            document.querySelector("footer").className = "";
+            UI.addEvent();
         }
     }
 
@@ -119,6 +133,8 @@
     };
 
     window.onload = () => {
+        window.scrollTo(0, 0);
         UI.addEvent();
+        document.getElementById("reset").addEventListener("click", UI.reset);
     }
 })();
