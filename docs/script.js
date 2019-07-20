@@ -1,60 +1,121 @@
 (() => {
     var UI = {
-        metricNo: 0,
-        addEvent: () => {
-            document.querySelectorAll(".metric.--active .metric-value").forEach((e) => {
+        metrics: {
+            AV: { state: 1, value: "" },
+            AC: { state: 0, value: "" },
+            PR: { state: 0, value: "" },
+            UI: { state: 0, value: "" },
+            S: { state: 0, value: "" },
+            C: { state: 0, value: "" },
+            I: { state: 0, value: "" },
+            A: { state: 0, value: "" }
+        },
+        activateMetric: (m) => {
+            UI.metrics[m.id].state = 1;
+            m.classList.add("--active");
+            UI.addNextEvent(m);
+            window.scrollTo(0, m.offsetTop + -10);
+        },
+        addEditEvent: (m) => {
+            m.querySelector(".--selected").addEventListener("click", UI.editMetric);
+        },
+        addNextEvent: (m) => {
+            m.querySelectorAll(".metric-value").forEach((e) => {
                 e.addEventListener("click", UI.nextMetric);
             });
         },
+        collapseMetric: (m) => {
+            UI.metrics[m.id].state = -1;
+            m.classList.remove("--active");
+            m.classList.add("--collapse");
+            UI.removeNextEvent(m);
+            UI.addEditEvent(m);
+        },
+        editMetric: (e) => {
+            e = e.path[0] ? e.path[0] : e.currentTarget;
+            var m = e.parentElement;
+            if(document.querySelector(".metric.--active"))
+                UI.normalizeMetric(document.querySelector(".metric.--active"));
+            m.classList.remove("--collapse");
+            UI.activateMetric(e.parentElement);
+            UI.removeEditEvent(e.parentElement);
+            UI.resetValue(e);
+        },
+        getChar: (a) => {
+            return UI.metrics[a].value;
+        },
         nextMetric: (e) => {
-            if (e.path[0])
-                e = e.path[0];
-            else
-                e = e.currentTarget;
-            document.querySelectorAll(".metric.--active .metric-value").forEach((e) => {
-                e.removeEventListener("click", UI.nextMetric);
-            });
-            e.classList.add("--selected");
-            if (UI.metricNo < document.querySelectorAll(".metric").length) {
-                document.querySelector(".metric.--active").classList.add("--collapse");
-                document.querySelector(".metric.--active").classList.remove("--active");
-            }
-            if (UI.metricNo < document.querySelectorAll(".metric").length - 1) {
-                document.querySelectorAll(".metric")[++UI.metricNo].classList.add("--active");
-                window.scrollTo(0, document.querySelector(".metric.--active").offsetTop + -10);
-                UI.addEvent(e);
-            } else if (UI.metricNo === document.querySelectorAll(".metric").length - 1) {
-                var result = CVSS.calculateCVSSFromMetrics();
-                if (result.success === true) {
-                    document.getElementById("score").innerHTML = result.baseMetricScore;
-                    document.getElementById("level").innerHTML = result.baseSeverity;
-                    document.querySelector("footer").classList.add("--" + result.baseSeverity);
-                } else {
-                    document.getElementById("score").innerHTML = "0.0";
-                    document.getElementById("level").innerHTML = "None";
-                    document.querySelector("footer").classList.add("--None");
+            e = e.path[0] ? e.path[0] : e.currentTarget;
+            UI.setValue(e);
+            UI.collapseMetric(e.parentElement);
+            for (var metric in UI.metrics) {
+                if(UI.metrics[metric].state === 0) {
+                    UI.activateMetric(document.getElementById(metric));
+                    return;
                 }
             }
+            UI.showResult();
+        },
+        normalizeMetric: (m) => {
+            UI.metrics[m.id].state = 0;
+            m.classList.remove("--active");
+            UI.removeNextEvent(m);
+        },
+        removeEditEvent: (m) => {
+            m.querySelector(".--selected").removeEventListener("click", UI.editMetric);
+        },
+        removeNextEvent: (m) => {
+            m.querySelectorAll(".metric-value").forEach((e) => {
+                e.removeEventListener("click", UI.nextMetric);
+            });
         },
         reset: () => {
-            UI.metricNo = 0;
-            document.querySelectorAll(".metric.--collapse").forEach((e) => {
-                e.classList.remove("--collapse");
+            for (var metric in UI.metrics) {
+                UI.metrics[metric].state = 0;
+                UI.metrics[metric].value = "";
+            }
+            document.querySelectorAll(".metric.--active").forEach((e) => {
+                UI.removeNextEvent(e);
             });
-            document.querySelectorAll(".metric-value.--selected").forEach((e) => {
+            document.querySelectorAll(".metric.--collapse").forEach((e) => {
+                UI.removeEditEvent(e);
+            });
+            document.querySelectorAll(".--selected").forEach((e) => {
                 e.classList.remove("--selected");
             });
-            document.querySelectorAll(".metric")[UI.metricNo].classList.add("--active");
+            document.querySelectorAll(".metric").forEach((e) => {
+                e.classList.remove("--active");
+                e.classList.remove("--collapse");
+            });
             window.scrollTo(0, 0);
+            document.getElementById("AV").classList.add("--active");
+            UI.addNextEvent(document.getElementById("AV"));
             document.querySelector("footer").className = "";
-            UI.addEvent();
+            document.getElementById("score").innerHTML = "";
+            document.getElementById("level").innerHTML = "";
+        },
+        resetValue: (e) => {
+            e.classList.remove("--selected");
+            UI.metrics[e.parentElement.id].value = "";
+        },
+        setValue: (e) => {
+            e.classList.add("--selected");
+            UI.metrics[e.parentElement.id].value = e.innerHTML[0];
+        },
+        showResult: () => {
+            var result = CVSS.calculateCVSSFromMetrics();
+            if(result.success) {
+                document.querySelector("footer").classList.add("--" + result.baseSeverity);
+                document.getElementById("score").innerHTML = result.baseMetricScore;
+                document.getElementById("level").innerHTML = result.baseSeverity;
+            }
         }
     }
 
     var CVSS = {
         exploitabilityCoefficient: 8.22,
         scopeCoefficient: 1.08,
-        Weight: {
+        weights: {
             AV: { N: 0.85, A: 0.62, L: 0.55, P: 0.2 },
             AC: { H: 0.44, L: 0.77 },
             PR: {
@@ -77,19 +138,19 @@
             var baseScore;
             var impactSubScore;
 
-            var metricWeightAV = CVSS.Weight.AV[CVSS.getChar("AV")];
-            var metricWeightAC = CVSS.Weight.AC[CVSS.getChar("AC")];
-            var metricWeightPR = CVSS.Weight.PR[CVSS.getChar("PR")][CVSS.getChar("S")];
-            var metricWeightUI = CVSS.Weight.UI[CVSS.getChar("UI")];
-            var metricWeightS = CVSS.Weight.S[CVSS.getChar("S")];
-            var metricWeightC = CVSS.Weight.CIA[CVSS.getChar("C")];
-            var metricWeightI = CVSS.Weight.CIA[CVSS.getChar("I")];
-            var metricWeightA = CVSS.Weight.CIA[CVSS.getChar("A")];
+            var metricWeightAV = CVSS.weights.AV[UI.getChar("AV")];
+            var metricWeightAC = CVSS.weights.AC[UI.getChar("AC")];
+            var metricWeightPR = CVSS.weights.PR[UI.getChar("PR")][UI.getChar("S")];
+            var metricWeightUI = CVSS.weights.UI[UI.getChar("UI")];
+            var metricWeightS = CVSS.weights.S[UI.getChar("S")];
+            var metricWeightC = CVSS.weights.CIA[UI.getChar("C")];
+            var metricWeightI = CVSS.weights.CIA[UI.getChar("I")];
+            var metricWeightA = CVSS.weights.CIA[UI.getChar("A")];
 
             var exploitabalitySubScore = CVSS.exploitabilityCoefficient * metricWeightAV * metricWeightAC * metricWeightPR * metricWeightUI;
             var impactSubScoreMultiplier = (1 - ((1 - metricWeightC) * (1 - metricWeightI) * (1 - metricWeightA)));
 
-            if (CVSS.getChar("S") === "U") {
+            if (UI.getChar("S") === "U") {
                 impactSubScore = metricWeightS * impactSubScoreMultiplier
             } else {
                 impactSubScore = metricWeightS * (impactSubScoreMultiplier - 0.029) - 3.25 * Math.pow(impactSubScoreMultiplier - 0.02, 15)
@@ -98,7 +159,7 @@
             if (impactSubScore <= 0) {
                 baseScore = 0
             } else {
-                if (CVSS.getChar("S") === "U") {
+                if (UI.getChar("S") === "U") {
                     baseScore = CVSS.roundUp1(Math.min((exploitabalitySubScore + impactSubScore), 10))
                 } else {
                     baseScore = CVSS.roundUp1(Math.min((exploitabalitySubScore + impactSubScore) * CVSS.scopeCoefficient, 10))
@@ -112,9 +173,6 @@
                 baseMetricScore: baseScore,
                 baseSeverity: CVSS.severityRating(baseScore),
             }
-        },
-        getChar: (a) => {
-            return document.querySelector("#" + a + " .--selected").innerHTML[0]
         },
         roundUp1: (d) => {
             return Math.ceil(d * 10) / 10
@@ -136,7 +194,8 @@
 
     window.onload = () => {
         window.scrollTo(0, 0);
-        UI.addEvent();
+        document.getElementById("AV").classList.add("--active");
+        UI.addNextEvent(document.getElementById("AV"));
         document.getElementById("reset").addEventListener("click", UI.reset);
     }
 })();
