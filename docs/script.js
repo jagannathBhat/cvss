@@ -103,7 +103,7 @@
             UI.metrics[e.parentElement.id].value = e.innerHTML[0];
         },
         showResult: () => {
-            document.querySelector("footer").classList.remove("--" + result.baseSeverity);
+            document.querySelector("footer").className = "";
             var result = CVSS.calculateCVSSFromMetrics();
             if(result.success) {
                 document.querySelector("footer").classList.add("--" + result.baseSeverity);
